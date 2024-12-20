@@ -1,0 +1,93 @@
+/* General body styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh; /* Ensure the body takes up full height */
+    justify-content: center; /* Center content vertically on larger screens */
+}
+
+/* Center the heading at the top */
+h1 {
+    text-align: center;
+    margin-top: 20px;
+    color: #333;
+    font-size: 24px;
+}
+
+/* Form container */
+form {
+    background-color: #ffffff;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    width: 90%; /* Default width for smaller screens */
+    max-width: 400px; /* Limit the maximum width for larger screens */
+    box-sizing: border-box; /* Ensure padding doesn't affect the width */
+}
+
+/* Form labels */
+label {
+    font-size: 16px;
+    color: #555;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Form inputs */
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+/* Button styling */
+button {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive Design: Adapt for smaller screens */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 20px; /* Reduce font size for headings on small screens */
+        margin-top: 10px;
+    }
+
+    form {
+        padding: 15px; /* Reduce padding for smaller screens */
+    }
+
+    button {
+        font-size: 14px; /* Reduce button font size for smaller screens */
+    }
+}
+
+/* Responsive Design: Add space for very small screens */
+@media (max-width: 400px) {
+    form {
+        padding: 10px; /* Further reduce padding for very small screens */
+    }
+
+    input {
+        padding: 8px; /* Adjust input padding */
+    }
+}

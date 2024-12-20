@@ -1,0 +1,43 @@
+/* General body styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f8ff; /* Light blue background for a cheerful vibe */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    text-align: center;
+}
+
+/* Heading styling */
+h1 {
+    color: #28a745; /* Success green */
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+/* Paragraph styling */
+p {
+    color: #333;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+/* Link button styling */
+a {
+    text-decoration: none;
+    background-color: #007BFF; /* Blue background */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+
+/* Hover effect for link button */
+a:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/indexStyle.css') }}">
+</head>
+
+    <title>Attendance Form</title>
+</head>
+<body>
+    <h1>Attendance Form</h1>
+    <form action="{{ url_for('submit_attendance') }}" method="POST">
+        <label for="student_id">Student ID:</label><br>
+        <input type="text" id="student_id" name="student_id" required><br><br>
+
+        <label for="session_id">Session ID:</label><br>
+        <input type="text" id="session_id" name="session_id" value="Session_101" readonly><br><br>
+
+        <label for="subject">Subject:</label><br>
+        <input type="text" id="subject" name="subject" value="Math" readonly><br><br>
+
+        <label for="date">Date:</label><br>
+        <input type="text" id="date" name="date" value="2024-12-08" readonly><br><br>
+
+        <button type="submit">Submit Attendance</button>
+    </form>
+</body>
+</html>
