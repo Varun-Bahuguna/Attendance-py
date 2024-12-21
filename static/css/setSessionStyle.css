@@ -1,0 +1,88 @@
+/* Set the body background color and text color */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Style the main heading */
+h1 {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 2em;
+    color: #4CAF50;
+}
+
+/* Style the form container */
+form {
+    width: 40%;  /* Thinner form width */
+    margin: 40px auto;
+    background-color: white;
+    padding: 20px;  /* Less padding for a thinner look */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Style the form labels */
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+/* Style the form input fields */
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 8px;  /* Slightly smaller padding */
+    margin-bottom: 16px;  /* Reduced space between inputs */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+/* Style the submit button */
+button[type="submit"] {
+    width: 100%;
+    padding: 10px;  /* Adjusted padding */
+    background-color: #4CAF50;
+    color: white;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+/* Style for error message */
+p {
+    font-size: 1.1em;
+    color: red;
+    text-align: center;
+}
+
+/* Add responsiveness for smaller screens */
+@media screen and (max-width: 768px) {
+    form {
+        width: 80%;  /* Expand width on smaller screens */
+        padding: 15px;  /* Less padding for smaller screens */
+    }
+
+    h1 {
+        font-size: 1.8em;  /* Slightly smaller heading on smaller screens */
+    }
+
+    input[type="text"], input[type="password"] {
+        padding: 10px;  /* Adjust padding for smaller screens */
+    }
+
+    button[type="submit"] {
+        padding: 12px;  /* Adjust button padding for smaller screens */
+    }
+}
