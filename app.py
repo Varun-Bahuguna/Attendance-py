@@ -21,7 +21,12 @@ else:
     print("Excel file already exists.")
 
 # Global variable to store current session details
-current_session = {"subject": "Math", "session_id": "Session_101"}  # Default values
+current_session = {
+    "subject": "Math",
+    "session_id": "Session_101",
+    "start_time": "09:00",  # Default start time
+    "end_time": "10:00"     # Default end time
+}
 
 @app.route('/')
 def home():
@@ -60,14 +65,28 @@ def submit_attendance():
         subject = request.form['subject']
         date = request.form['date']
 
-        # Record the attendance in the Excel file
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        print(f"Adding student ID: {student_id} to the attendance sheet.")
+        # Get the current time
+        current_time = datetime.now()
+
+        # Convert the session start and end times into datetime objects for comparison
+        session_start = datetime.strptime(current_session['start_time'], '%H:%M').replace(year=current_time.year, month=current_time.month, day=current_time.day)
+        session_end = datetime.strptime(current_session['end_time'], '%H:%M').replace(year=current_time.year, month=current_time.month, day=current_time.day)
+
+        # Check if the current time is within the session's allowed range
+        if current_time < session_start:
+            error_message = f"Attendance cannot be recorded before the session starts at {current_session['start_time']}."
+            return render_template('index.html', current_session=current_session, current_date=date, error_message=error_message)
+
+        if current_time > session_end:
+            error_message = f"Attendance cannot be recorded after the session ends at {current_session['end_time']}."
+            return render_template('index.html', current_session=current_session, current_date=date, error_message=error_message)
+
+        # If within the time range, proceed with attendance recording
+        timestamp = current_time.strftime('%H:%M:%S')  # Include seconds in the timestamp
         workbook = openpyxl.load_workbook(FILE_NAME)
         sheet = workbook.active
         sheet.append([student_id, session_id, subject, date, timestamp])  # Append data
         workbook.save(FILE_NAME)
-        print(f"Attendance for {student_id} saved.")
 
         return redirect(url_for('attendance_success'))
 
@@ -75,21 +94,21 @@ def submit_attendance():
 def set_session():
     global current_session
     if request.method == 'POST':
-        # Check if ID and password are correct
         admin_id = request.form['admin_id']
         admin_password = request.form['admin_password']
 
-        # Replace these with secure credentials or check against a database
         valid_id = "admin"
         valid_password = "admin@1234"
 
         if admin_id == valid_id and admin_password == valid_password:
-            # Update session and subject if credentials are correct
+            # Update session details including start_time and end_time
             current_session['subject'] = request.form['subject']
             current_session['session_id'] = request.form['session_id']
+            current_session['start_time'] = request.form['start_time']
+            current_session['end_time'] = request.form['end_time']
+            
             return redirect(url_for('home'))
         else:
-            # Invalid credentials
             error_message = "Invalid ID or password. Please try again."
             return render_template('set_session.html', current_session=current_session, error_message=error_message)
 
