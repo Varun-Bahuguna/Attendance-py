@@ -4,6 +4,10 @@ import openpyxl
 import os
 import qrcode  # Import qrcode for QR code generation
 
+IST = pytz.timezone('Asia/Kolkata')
+current_time = datetime.now(IST)
+formatted_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
+
 # Define the Flask app instance
 app = Flask(__name__)
 
