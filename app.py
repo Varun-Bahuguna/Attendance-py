@@ -2,16 +2,16 @@ from flask import Flask, render_template, request, redirect, url_for, send_from_
 from datetime import datetime
 import openpyxl
 import os
-import qrcode  # Import qrcode for QR code generation
-
-IST = pytz.timezone('Asia/Kolkata')
-current_time = datetime.now(IST)
-formatted_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
+import pytz  
+import qrcode  
 
 # Define the Flask app instance
 app = Flask(__name__)
 
 FILE_NAME = os.path.join(os.getcwd(), 'attendance.xlsx')
+
+# Set the IST timezone
+IST = pytz.timezone('Asia/Kolkata')
 
 # Check if the Excel file exists, if not create one
 if not os.path.exists(FILE_NAME):
@@ -35,7 +35,7 @@ current_session = {
 @app.route('/')
 def home():
     global current_session
-    current_date = datetime.now().strftime('%Y-%m-%d')
+    current_date = datetime.now(IST).strftime('%Y-%m-%d')  # Use IST for the current date
     return render_template('index.html', current_session=current_session, current_date=current_date)
 
 @app.route('/generate_qr')
@@ -69,12 +69,12 @@ def submit_attendance():
         subject = request.form['subject']
         date = request.form['date']
 
-        # Get the current time
-        current_time = datetime.now()
+        # Get the current time in IST
+        current_time = datetime.now(IST)
 
-        # Convert the session start and end times into datetime objects for comparison
-        session_start = datetime.strptime(current_session['start_time'], '%H:%M').replace(year=current_time.year, month=current_time.month, day=current_time.day)
-        session_end = datetime.strptime(current_session['end_time'], '%H:%M').replace(year=current_time.year, month=current_time.month, day=current_time.day)
+        # Convert the session start and end times into datetime objects for comparison (with IST)
+        session_start = datetime.strptime(current_session['start_time'], '%H:%M').replace(year=current_time.year, month=current_time.month, day=current_time.day, tzinfo=IST)
+        session_end = datetime.strptime(current_session['end_time'], '%H:%M').replace(year=current_time.year, month=current_time.month, day=current_time.day, tzinfo=IST)
 
         # Check if the current time is within the session's allowed range
         if current_time < session_start:
@@ -86,7 +86,7 @@ def submit_attendance():
             return render_template('index.html', current_session=current_session, current_date=date, error_message=error_message)
 
         # If within the time range, proceed with attendance recording
-        timestamp = current_time.strftime('%H:%M:%S')  # Include seconds in the timestamp
+        timestamp = current_time.strftime('%H:%M:%S')  # Include seconds in the timestamp (HH:MM:SS)
         workbook = openpyxl.load_workbook(FILE_NAME)
         sheet = workbook.active
         sheet.append([student_id, session_id, subject, date, timestamp])  # Append data
