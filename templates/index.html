@@ -4,25 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/indexStyle.css') }}">
-</head>
-
     <title>Attendance Form</title>
 </head>
 <body>
     <h1>Attendance Form</h1>
+
+    <p><strong>Subject:</strong> {{ current_session['subject'] }}</p>
+    <p><strong>Session ID:</strong> {{ current_session['session_id'] }}</p>
+    <!-- Changed Session Timing to Submission Timing -->
+    <p><strong>Submission Timing:</strong> {{ current_session['start_time'] }} to {{ current_session['end_time'] }}</p>
+
     <form action="{{ url_for('submit_attendance') }}" method="POST">
+        {% if error_message %}
+        <div style="color: red; margin-top: 20px;">
+            <strong>Error:</strong> {{ error_message }}
+        </div>
+        {% endif %}
+
+        <!-- Student ID Field -->
         <label for="student_id">Student ID:</label><br>
         <input type="text" id="student_id" name="student_id" required><br><br>
 
+        <!-- Session ID Field -->
         <label for="session_id">Session ID:</label><br>
-        <input type="text" id="session_id" name="session_id" value="Session_101" readonly><br><br>
+        <input type="text" id="session_id" name="session_id" value="{{ current_session['session_id'] }}" readonly><br><br>
 
+        <!-- Subject Field -->
         <label for="subject">Subject:</label><br>
-        <input type="text" id="subject" name="subject" value="Math" readonly><br><br>
+        <input type="text" id="subject" name="subject" value="{{ current_session['subject'] }}" readonly><br><br>
 
+        <!-- Date Field -->
         <label for="date">Date:</label><br>
-        <input type="text" id="date" name="date" value="2024-12-08" readonly><br><br>
+        <input type="text" id="date" name="date" value="{{ current_date }}" readonly><br><br>
 
+        <!-- Submit Button -->
         <button type="submit">Submit Attendance</button>
     </form>
 </body>
