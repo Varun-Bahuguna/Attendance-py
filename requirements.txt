@@ -1,5 +1,3 @@
 Flask
 qrcode[pil]
 openpyxl
-gunicorn
-pytz
