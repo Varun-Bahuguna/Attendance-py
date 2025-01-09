@@ -19,10 +19,11 @@ if not os.path.exists(FILE_NAME):
     workbook = openpyxl.Workbook()
     sheet = workbook.active
     sheet.title = "Attendance"
-    sheet.append(["Student ID", "Session ID", "Subject", "Date", "Timestamp"])  # Header row
+    sheet.append(["Student ID", "Session ID", "Subject", "Date", "Timestamp", "IP Address"])  # Added "IP Address" here
     workbook.save(FILE_NAME)
 else:
     print("Excel file already exists.")
+
 
 # Global variable to store current session details
 current_session = {
@@ -72,6 +73,20 @@ def submit_attendance():
         # Get the current time in IST
         current_time = datetime.now(IST)
 
+        # Extract the client's IP address
+        ip_address = request.remote_addr
+
+        # Load the workbook and check for duplicate IPs
+        workbook = openpyxl.load_workbook(FILE_NAME)
+        sheet = workbook.active
+
+        # Iterate through rows to check if the IP already exists for the session
+        for row in sheet.iter_rows(min_row=2, values_only=True):  # Skip the header row
+            existing_session_id, existing_ip = row[1], row[5]
+            if existing_session_id == session_id and existing_ip == ip_address:
+                error_message = "Attendance has already been submitted from this IP address for the session."
+                return render_template('index.html', current_session=current_session, current_date=date, error_message=error_message)
+
         # Convert the session start and end times into datetime objects for comparison (with IST)
         session_start = datetime.strptime(current_session['start_time'], '%H:%M').replace(year=current_time.year, month=current_time.month, day=current_time.day, tzinfo=IST)
         session_end = datetime.strptime(current_session['end_time'], '%H:%M').replace(year=current_time.year, month=current_time.month, day=current_time.day, tzinfo=IST)
@@ -85,14 +100,13 @@ def submit_attendance():
             error_message = f"Attendance cannot be recorded after the session ends at {current_session['end_time']}."
             return render_template('index.html', current_session=current_session, current_date=date, error_message=error_message)
 
-        # If within the time range, proceed with attendance recording
+        # If within the time range and no duplicate IP, proceed with attendance recording
         timestamp = current_time.strftime('%H:%M:%S')  # Include seconds in the timestamp (HH:MM:SS)
-        workbook = openpyxl.load_workbook(FILE_NAME)
-        sheet = workbook.active
-        sheet.append([student_id, session_id, subject, date, timestamp])  # Append data
+        sheet.append([student_id, session_id, subject, date, timestamp, ip_address])  # Append data
         workbook.save(FILE_NAME)
 
         return redirect(url_for('attendance_success'))
+
 
 @app.route('/set_session', methods=['GET', 'POST'])
 def set_session():
