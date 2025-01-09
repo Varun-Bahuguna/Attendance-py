@@ -73,8 +73,8 @@ def submit_attendance():
         # Get the current time in IST
         current_time = datetime.now(IST)
 
-        # Extract the client's IP address
-        ip_address = request.remote_addr
+        # Extract the client's IP address using X-Forwarded-For
+        ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
 
         # Load the workbook and check for duplicate IPs
         workbook = openpyxl.load_workbook(FILE_NAME)
@@ -106,6 +106,7 @@ def submit_attendance():
         workbook.save(FILE_NAME)
 
         return redirect(url_for('attendance_success'))
+
 
 
 @app.route('/set_session', methods=['GET', 'POST'])
