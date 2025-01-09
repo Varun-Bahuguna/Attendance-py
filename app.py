@@ -3,6 +3,7 @@ from datetime import datetime
 import openpyxl
 import os
 import pytz  
+import uuid
 import qrcode  
 
 # Define the Flask app instance
