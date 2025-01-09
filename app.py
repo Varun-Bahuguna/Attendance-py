@@ -62,6 +62,22 @@ def download_file(filename):
     directory = os.getcwd()  # Current working directory
     return send_from_directory(directory, filename, as_attachment=True)
 
+@app.before_request
+def assign_device_id():
+    """
+    Middleware to assign a unique device ID if not already set.
+    """
+    if not request.cookies.get('device_id'):
+        # Generate a new unique device ID
+        device_id = str(uuid.uuid4())
+        print(f"Assigning new device ID: {device_id}")
+        
+        # Set the cookie in the response (done in the main route function)
+        request.device_id = device_id  # Temporary storage for this request
+    else:
+        request.device_id = request.cookies.get('device_id')  # Existing device ID
+
+
 @app.route('/submit_attendance', methods=['POST'])
 def submit_attendance():
     if request.method == 'POST':
@@ -70,22 +86,22 @@ def submit_attendance():
         subject = request.form['subject']
         date = request.form['date']
 
-        # Get the current time in IST
-        current_time = datetime.now(IST)
+        # Retrieve the device ID from the request
+        device_id = request.device_id
 
-        # Extract the client's IP address using X-Forwarded-For
-        ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
-
-        # Load the workbook and check for duplicate IPs
+        # Load the workbook and check for duplicate device IDs
         workbook = openpyxl.load_workbook(FILE_NAME)
         sheet = workbook.active
 
-        # Iterate through rows to check if the IP already exists for the session
+        # Iterate through rows to check if the device ID already exists for the session
         for row in sheet.iter_rows(min_row=2, values_only=True):  # Skip the header row
-            existing_session_id, existing_ip = row[1], row[5]
-            if existing_session_id == session_id and existing_ip == ip_address:
-                error_message = "Attendance has already been submitted from this IP address for the session."
+            existing_session_id, existing_device_id = row[1], row[5]
+            if existing_session_id == session_id and existing_device_id == device_id:
+                error_message = "Attendance has already been submitted from this device for the session."
                 return render_template('index.html', current_session=current_session, current_date=date, error_message=error_message)
+
+        # Get the current time in IST
+        current_time = datetime.now(IST)
 
         # Convert the session start and end times into datetime objects for comparison (with IST)
         session_start = datetime.strptime(current_session['start_time'], '%H:%M').replace(year=current_time.year, month=current_time.month, day=current_time.day, tzinfo=IST)
@@ -100,12 +116,16 @@ def submit_attendance():
             error_message = f"Attendance cannot be recorded after the session ends at {current_session['end_time']}."
             return render_template('index.html', current_session=current_session, current_date=date, error_message=error_message)
 
-        # If within the time range and no duplicate IP, proceed with attendance recording
+        # If within the time range and no duplicate device ID, proceed with attendance recording
         timestamp = current_time.strftime('%H:%M:%S')  # Include seconds in the timestamp (HH:MM:SS)
-        sheet.append([student_id, session_id, subject, date, timestamp, ip_address])  # Append data
+        sheet.append([student_id, session_id, subject, date, timestamp, device_id])  # Append data
         workbook.save(FILE_NAME)
 
-        return redirect(url_for('attendance_success'))
+        response = redirect(url_for('attendance_success'))
+
+        # Set the device ID cookie in the response
+        response.set_cookie('device_id', device_id, max_age=30 * 24 * 60 * 60)  # Cookie expires in 30 days
+        return response
 
 
 
