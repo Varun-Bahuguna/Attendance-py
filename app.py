@@ -77,6 +77,22 @@ def assign_device_id():
     else:
         request.device_id = request.cookies.get('device_id')  # Existing device ID
 
+@app.before_request
+def assign_device_id():
+    """
+    Middleware to assign a unique device ID if not already set.
+    """
+    if not request.cookies.get('device_id'):
+        # Generate a new unique device ID
+        device_id = str(uuid.uuid4())
+        print(f"Assigning new device ID: {device_id}")
+        
+        # Set the cookie in the response (done in the main route function)
+        request.device_id = device_id  # Temporary storage for this request
+    else:
+        request.device_id = request.cookies.get('device_id')  # Existing device ID
+
+
 
 @app.route('/submit_attendance', methods=['POST'])
 def submit_attendance():
