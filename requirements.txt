@@ -3,3 +3,4 @@ qrcode[pil]
 openpyxl
 gunicorn
 pytz
+uuid
