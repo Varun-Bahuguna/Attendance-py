@@ -103,20 +103,6 @@ def submit_attendance():
         subject = request.form['subject']
         date = request.form['date']
 
-        # Retrieve the device ID from the request
-        device_id = request.device_id
-
-        # Load the workbook and check for duplicate device IDs
-        workbook = openpyxl.load_workbook(FILE_NAME)
-        sheet = workbook.active
-
-        # Iterate through rows to check if the device ID already exists for the session
-        for row in sheet.iter_rows(min_row=2, values_only=True):  # Skip the header row
-            existing_session_id, existing_device_id = row[1], row[5]
-            if existing_session_id == session_id and existing_device_id == device_id:
-                error_message = "Attendance has already been submitted from this device for the session."
-                return render_template('index.html', current_session=current_session, current_date=date, error_message=error_message)
-
         # Get the current time in IST
         current_time = datetime.now(IST)
 
@@ -133,17 +119,14 @@ def submit_attendance():
             error_message = f"Attendance cannot be recorded after the session ends at {current_session['end_time']}."
             return render_template('index.html', current_session=current_session, current_date=date, error_message=error_message)
 
-        # If within the time range and no duplicate device ID, proceed with attendance recording
+        # If within the time range, proceed with attendance recording
         timestamp = current_time.strftime('%H:%M:%S')  # Include seconds in the timestamp (HH:MM:SS)
-        sheet.append([student_id, session_id, subject, date, timestamp, device_id])  # Append data
+        workbook = openpyxl.load_workbook(FILE_NAME)
+        sheet = workbook.active
+        sheet.append([student_id, session_id, subject, date, timestamp])  # Append data without "IP Address"
         workbook.save(FILE_NAME)
 
-        response = redirect(url_for('attendance_success'))
-
-        # Set the device ID cookie in the response
-        response.set_cookie('device_id', device_id, max_age=30 * 24 * 60 * 60)  # Cookie expires in 30 days
-        return response
-
+        return redirect(url_for('attendance_success'))
 
 
 @app.route('/set_session', methods=['GET', 'POST'])
